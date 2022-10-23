@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * MIT License
- * Copyright (c) 2021 Ivan Odinets
+ * Copyright (c) 2022 Ivan Odinets
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,29 @@
  *
  */
 
-#include "AddVideoReaction.h"
+#ifndef STATSCMD_H
+#define STATSCMD_H
 
-#include "ReactionSelector.h"
+#include "BotAdminCommand.h"
 
-void AddVideoReaction::executeCommand(const Telegram::Message &message)
+class StatsCmd : public BotAdminCommand
 {
-    QString line = message.string;
-    line.remove(this->cmdToken());
-    if (line.startsWith(" "))
-        line.remove(0,1);
-    ReactionSelector::get().addVideoReaction(line);
-}
+public:
+    StatsCmd();
+    QString cmdToken() const                               { return "/stats"; }
+
+    void increaseMessagesHandled()                         { m_messagesHandled++; }
+    void increaseVoiceMessagesHandled()                    { m_voiceMessagesHandled++; }
+    void increaseVideoMessagesHandled()                    { m_videoMessagesHandled++; }
+
+protected:
+    void executeCommand(const Telegram::Message& message);
+
+private:
+    QDateTime        m_startingDateTime;
+    quint64          m_messagesHandled;
+    quint64          m_voiceMessagesHandled;
+    quint64          m_videoMessagesHandled;
+};
+
+#endif // STATSCMD_H

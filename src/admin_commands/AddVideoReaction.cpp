@@ -24,19 +24,16 @@
  *
  */
 
-#ifndef ADDVIDEOREACTION_H
-#define ADDVIDEOREACTION_H
+#include "AddVideoReaction.h"
 
-#include "BotAdminCommand.h"
+#include "ReactionSelector.h"
 
-class AddVideoReaction : public BotAdminCommand
+void AddVideoReaction::executeCommand(const Telegram::Message &message)
 {
-public:
-    QString cmdToken() const
-        { return "/addVideoReaction"; }
-
-protected:
-    void executeCommand(const Telegram::Message &message);
-};
-
-#endif // ADDVIDEOREACTION_H
+    QString line = message.string;
+    line.remove(this->cmdToken());
+    if (line.startsWith(" "))
+        line.remove(0,1);
+    ReactionSelector::get().addVideoReaction(line);
+    BotAdminCommand::_sendReply("OK",message);
+}

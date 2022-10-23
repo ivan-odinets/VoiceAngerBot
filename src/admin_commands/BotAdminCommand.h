@@ -24,32 +24,30 @@
  *
  */
 
-#include "CommandLineParser.h"
+#ifndef BOTADMINCOMMAND_H
+#define BOTADMINCOMMAND_H
 
-#include <QDir>
+#include "QtTelegramBot/types/message.h"
 
-CommandLineParser::CommandLineParser() :
-    m_botTokenOption(QStringList() << "t" << "token",QCoreApplication::translate("main", "Set bot token.")),
-    m_reactionMessagesFileOption(QStringList() << "r" << "reactions",QCoreApplication::translate("main", "Set reaction file.")),
-    m_botAdminOption(QStringList() << "a" << "admin",QCoreApplication::translate("main", "Set bot administrator userId."))
+namespace Telegram
 {
-    // -h/ --help
-    addHelpOption();
-    // -v/ --version
-    addVersionOption();
-
-    // -t/ --token
-    m_botTokenOption.setValueName("token");
-    m_botTokenOption.setDefaultValue("");
-    addOption(m_botTokenOption);
-
-    // -r/ --reactions
-    m_reactionMessagesFileOption.setValueName("reactions");
-    m_reactionMessagesFileOption.setDefaultValue("");
-    addOption(m_reactionMessagesFileOption);
-
-    // -a/ --admin
-    m_botAdminOption.setValueName("admin");
-    m_botAdminOption.setDefaultValue("-1");
-    addOption(m_botAdminOption);
+class Bot;
 }
+
+class BotAdminCommand
+{
+public:
+    static void setTelegramApi(Telegram::Bot* newApi)      { p_api = newApi; }
+
+    virtual QString cmdToken() const = 0;
+    virtual void executeCommand(const Telegram::Message& message) = 0;
+
+protected:
+    static Telegram::Bot* getApi()                         { return p_api; }
+    static void _sendReply(const QString& reply,const Telegram::Message& message);
+
+private:
+    static Telegram::Bot* p_api;
+};
+
+#endif // BOTADMINCOMMAND_H

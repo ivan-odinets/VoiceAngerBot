@@ -24,14 +24,16 @@
  *
  */
 
-#include "BotAdminCommand.h"
+#include "AddVoiceReaction.h"
 
-bool BotAdminCommand::commandExecuted(const Telegram::Message &message)
+#include "ReactionSelector.h"
+
+void AddVoiceReaction::executeCommand(const Telegram::Message &message)
 {
-    if (message.string.startsWith(cmdToken())) {
-        executeCommand(message);
-        return true;
-    }
-
-    return false;
+    QString line = message.string;
+    line.remove(this->cmdToken());
+    if (line.startsWith(" "))
+        line.remove(0,1);
+    ReactionSelector::get().addVoiceReaction(line);
+    BotAdminCommand::_sendReply("OK",message);
 }

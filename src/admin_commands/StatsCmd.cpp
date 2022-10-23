@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * MIT License
- * Copyright (c) 2021 Ivan Odinets
+ * Copyright (c) 2022 Ivan Odinets
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,24 @@
  *
  */
 
-#include "AddGlobalReaction.h"
+#include "StatsCmd.h"
 
-#include "ReactionSelector.h"
+StatsCmd::StatsCmd() :
+    m_startingDateTime(QDateTime::currentDateTimeUtc()),
+    m_messagesHandled(0),
+    m_voiceMessagesHandled(0),
+    m_videoMessagesHandled(0)
+{}
 
-void AddGlobalReaction::executeCommand(const Telegram::Message &message)
+void StatsCmd::executeCommand(const Telegram::Message& message)
 {
-    QString line = message.string;
-    line.remove(this->cmdToken());
-    if (line.startsWith(" "))
-        line.remove(0,1);
-    ReactionSelector::get().addGlobalReaction(line);
+    QString result = QString(
+                "Bot running since: %1\r\n"
+                "Total messages processed: %2\r\n"
+                "Voice messages processed: %3\r\n"
+                "Video messages processed: %4")
+            .arg(m_startingDateTime.toString())
+            .arg(m_messagesHandled).arg(m_voiceMessagesHandled).arg(m_videoMessagesHandled);
+
+    BotAdminCommand::_sendReply(result,message);
 }

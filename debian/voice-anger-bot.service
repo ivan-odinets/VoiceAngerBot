@@ -1,0 +1,20 @@
+[Unit]
+Description=VoiceAngerBot for Telegram
+After=network.target
+
+[Service]
+User=voice-anger-bot
+EnvironmentFile=/etc/telegram-bots/voice-anger-bot.conf
+ExecStart=/usr/bin/voice-anger-bot -t $TOKEN -r $REACTIONS -a $ADMIN
+StandardOutput=file:/var/log/telegram-bots/voice-anger-bot/output.log
+StandardError=file:/var/log/telegram-bots/voice-anger-bot/error.log
+
+ProtectSystem=yes
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+RestrictNamespaces=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -24,29 +24,18 @@
  *
  */
 
-#ifndef COMMANDLINEPARSER_H
-#define COMMANDLINEPARSER_H
+#ifndef ADDVIDEOREACTION_H
+#define ADDVIDEOREACTION_H
 
-#include <QCommandLineParser>
+#include "BotAdminCommand.h"
 
-class CommandLineParser : public QCommandLineParser
+class AddVideoReaction : public BotAdminCommand
 {
 public:
-    CommandLineParser();
-    ~CommandLineParser() {}
+    QString cmdToken() const                               { return "/addVideoReaction"; }
 
-    QString token() const
-        { return value(m_botTokenOption); }
-    QString reactionsFile() const
-        { return value(m_reactionMessagesFileOption); }
-
-    qint64 botAdmin()
-        { return value(m_botAdminOption).toLong(); }
-
-private:
-    QCommandLineOption   m_botTokenOption;
-    QCommandLineOption   m_reactionMessagesFileOption;
-    QCommandLineOption   m_botAdminOption;
+protected:
+    void executeCommand(const Telegram::Message &message);
 };
 
-#endif // COMMANDLINEPARSER_H
+#endif // ADDVIDEOREACTION_H

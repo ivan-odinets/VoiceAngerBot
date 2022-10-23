@@ -24,48 +24,18 @@
  *
  */
 
-#ifndef VOICEANGERBOT_H
-#define VOICEANGERBOT_H
+#ifndef ADDGLOBALREACTION_H
+#define ADDGLOBALREACTION_H
 
-#include "qttelegrambot.h"
+#include "BotAdminCommand.h"
 
-#include "admin_commands/AddGlobalReaction.h"
-#include "admin_commands/AddVideoReaction.h"
-#include "admin_commands/AddVoiceReaction.h"
-
-class VoiceAngerBot : public QObject
+class AddGlobalReaction : public BotAdminCommand
 {
-    Q_OBJECT
 public:
-    explicit VoiceAngerBot(QObject* parent = nullptr);
-    ~VoiceAngerBot();
+    QString cmdToken() const                               { return "/addGlobalReaction"; }
 
-    bool started();
-    void setApiKey(const QString& key)
-        { m_botApiKey = key; }
-    void setBotAdmin(qint32 userId)
-        { m_botAdmin = userId; }
-
-public slots:
-    void messageRecieved(const Telegram::Message& message);
-
-    void parseAdminCommand(const Telegram::Message& message);
-
-    void handleVoiceMessage(const Telegram::Message& message);
-    void handleVideoMessage(const Telegram::Message& message);
-
-private:
-    Telegram::Bot*   p_botApi;
-    Telegram::User   m_botUser;
-    QString          m_botApiKey;
-
-    void _sendReply(const QString& text,const Telegram::Message& message);
-
-    qint32                   m_botAdmin;
-    QList<BotAdminCommand*>   m_adminCommands;
-    AddGlobalReaction         m_addGlobalCmd;
-    AddVideoReaction          m_addVideoReactionCmd;
-    AddVoiceReaction          m_addVoiceReactionCmd;
+protected:
+    void executeCommand(const Telegram::Message &message);
 };
 
-#endif // VOICEANGERBOT_H
+#endif // ADDGLOBALREACTION_H

@@ -24,19 +24,16 @@
  *
  */
 
-#ifndef ADDVOICEREACTION_H
-#define ADDVOICEREACTION_H
+#include "AddGlobalReaction.h"
 
-#include "BotAdminCommand.h"
+#include "ReactionSelector.h"
 
-class AddVoiceReaction : public BotAdminCommand
+void AddGlobalReaction::executeCommand(const Telegram::Message &message)
 {
-public:
-    QString cmdToken() const
-        { return "/addVoiceReaction"; }
-
-protected:
-    void executeCommand(const Telegram::Message& message);
-};
-
-#endif // ADDVOICEREACTION_H
+    QString line = message.string;
+    line.remove(this->cmdToken());
+    if (line.startsWith(" "))
+        line.remove(0,1);
+    ReactionSelector::get().addGlobalReaction(line);
+    BotAdminCommand::_sendReply("OK",message);
+}

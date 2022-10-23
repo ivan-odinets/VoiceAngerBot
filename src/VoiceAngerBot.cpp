@@ -29,11 +29,12 @@
 #include "ReactionSelector.h"
 
 VoiceAngerBot::VoiceAngerBot(QObject* parent)
-    : QObject(parent)
+    : QObject(parent),p_botApi(nullptr)
 {
     m_adminCommands.append(&m_addGlobalCmd);
     m_adminCommands.append(&m_addVideoReactionCmd);
     m_adminCommands.append(&m_addVoiceReactionCmd);
+    m_adminCommands.append(&m_statistic);
 }
 VoiceAngerBot::~VoiceAngerBot()
 {}
@@ -44,13 +45,22 @@ bool VoiceAngerBot::started()
     connect(p_botApi,&Telegram::Bot::message,this,&VoiceAngerBot::messageRecieved);
 
     m_botUser = p_botApi->getMe();
-    qInfo() << __FILE__ << ":" << __LINE__ << ". Staring process using API key for following bot: "<<m_botUser;
+    qInfo() << "Staring process using API key for following bot: "<<m_botUser;
+
+    BotAdminCommand::setTelegramApi(p_botApi);
 
     return true;
 }
 
+void VoiceAngerBot::setProxy(const QNetworkProxy& proxy)
+{
+    if (p_botApi != nullptr)
+        p_botApi->setProxy(proxy);
+}
+
 void VoiceAngerBot::messageRecieved(const Telegram::Message& message)
 {
+    m_statistic.increaseMessagesHandled();
     if (message.type == Telegram::Message::VoiceType) {
         handleVoiceMessage(message);
         return;
@@ -70,11 +80,13 @@ void VoiceAngerBot::messageRecieved(const Telegram::Message& message)
 
 void VoiceAngerBot::handleVideoMessage(const Telegram::Message& message)
 {
+    m_statistic.increaseVideoMessagesHandled();
     _sendReply(ReactionSelector::get().getRandomVideoReaction(),message);
 }
 
 void VoiceAngerBot::handleVoiceMessage(const Telegram::Message& message)
 {
+    m_statistic.increaseVoiceMessagesHandled();
     _sendReply(ReactionSelector::get().getRandomVoiceReaction(),message);
 }
 
@@ -86,9 +98,9 @@ void VoiceAngerBot::_sendReply(const QString &text, const Telegram::Message &mes
 
 void VoiceAngerBot::parseAdminCommand(const Telegram::Message& message)
 {
-    for (int i = 0; i < m_adminCommands.count(); i++) {
-        if (m_adminCommands.at(i)->commandExecuted(message)) {
-            _sendReply("OK",message);
+    foreach (BotAdminCommand* cmd,m_adminCommands) {
+        if (message.string.startsWith(cmd->cmdToken())) {
+            cmd->executeCommand(message);
             return;
         }
     }

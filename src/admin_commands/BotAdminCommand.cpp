@@ -24,19 +24,13 @@
  *
  */
 
-#ifndef BOTADMINCOMMAND_H
-#define BOTADMINCOMMAND_H
+#include "BotAdminCommand.h"
 
-#include "QtTelegramBot/types/message.h"
+#include "QtTelegramBot/qttelegrambot.h"
 
-class BotAdminCommand
+Telegram::Bot* BotAdminCommand::p_api = nullptr;
+
+void BotAdminCommand::_sendReply(const QString& reply,const Telegram::Message& message)
 {
-public:
-    bool commandExecuted(const Telegram::Message& message);
-    virtual QString cmdToken() const = 0;
-
-protected:
-    virtual void executeCommand(const Telegram::Message& message) = 0;
-};
-
-#endif // BOTADMINCOMMAND_H
+    p_api->sendMessage(message.chat.id,reply,message.id);
+}

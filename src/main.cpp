@@ -27,7 +27,7 @@
 #include <QCoreApplication>
 
 #define APP_NAME                    "VoiceAngerBot"
-#define APP_VERSION                 "1.0.0"
+#define APP_VERSION                 "1.0.1"
 
 #include <cstdlib>
 #include <time.h>
@@ -51,24 +51,24 @@ int main(int argc, char *argv[])
     parser.process(app);
 
     if (parser.token().isEmpty()) {
-        qCritical() << __FILE__ << ":" << __LINE__ << ". API Token must be specified.";
+        qCritical() << "Telegram Bot API token must be specified. Exiting.";
         return -1;
     }
 
     if (parser.reactionsFile().isEmpty()) {
-        qCritical() << __FILE__ << ":" << __LINE__ << ". Reactions file must be specified.";
+        qCritical() << "Reactions file must be specified. Exiting.";
         return -1;
     }
 
     if (!ReactionSelector::get().phrasesLoaded(parser.reactionsFile())) {
-        qCritical() << __FILE__ << ":" << __LINE__ << ". Error parsing reactions file.";
+        qCritical() << "Reactions file was specified, but can not be parsed. Exiting.";
         return -1;
     }
 
     bot = new VoiceAngerBot;
 
     if (parser.botAdmin() == -1)
-        qWarning() << __FILE__ << ":" << __LINE__ << ". Bot administrator is not set, so administration commands will not work!";
+        qWarning() << "Bot administrator is not set, so administration commands will not work.";
     else
         bot->setBotAdmin(parser.botAdmin());
 
@@ -76,9 +76,12 @@ int main(int argc, char *argv[])
 
     //Start Bot
     if (!bot->started()) {
-        qCritical() << __FILE__ << ":" << __LINE__ << ". Can not start bot due to some errors.";
+        qCritical() << "Can not start bot due to some errors.";
         return -1;
     }
+
+    if (parser.validProxyConfigured())
+        bot->setProxy(parser.proxy());
 
     return app.exec();
 }

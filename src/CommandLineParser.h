@@ -24,19 +24,34 @@
  *
  */
 
-#ifndef ADDGLOBALREACTION_H
-#define ADDGLOBALREACTION_H
+#ifndef COMMANDLINEPARSER_H
+#define COMMANDLINEPARSER_H
 
-#include "BotAdminCommand.h"
+#include <QCommandLineParser>
+#include <QNetworkProxy>
 
-class AddGlobalReaction : public BotAdminCommand
+class CommandLineParser : public QCommandLineParser
 {
 public:
-    QString cmdToken() const
-        { return "/addGlobalReaction"; }
+    CommandLineParser();
+    ~CommandLineParser() {}
 
-protected:
-    void executeCommand(const Telegram::Message &message);
+    bool validProxyConfigured() const          { return isValidProxy(value(m_networkProxy)); }
+    QNetworkProxy proxy() const                { return proxyFromString(value(m_networkProxy)); }
+
+    QString token() const                      { return value(m_botTokenOption); }
+    QString reactionsFile() const              { return value(m_reactionMessagesFileOption); }
+
+    qint64 botAdmin()                          { return value(m_botAdminOption).toLong(); }
+
+private:
+    QCommandLineOption   m_botTokenOption;
+    QCommandLineOption   m_reactionMessagesFileOption;
+    QCommandLineOption   m_botAdminOption;
+    QCommandLineOption   m_networkProxy;
+
+    static bool isValidProxy(const QString& input);
+    static QNetworkProxy proxyFromString(QString input);
 };
 
-#endif // ADDGLOBALREACTION_H
+#endif // COMMANDLINEPARSER_H
