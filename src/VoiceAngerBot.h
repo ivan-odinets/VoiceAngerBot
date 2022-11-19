@@ -32,7 +32,12 @@
 #include "admin_commands/AddGlobalReaction.h"
 #include "admin_commands/AddVideoReaction.h"
 #include "admin_commands/AddVoiceReaction.h"
+#include "admin_commands/BackupDbCommand.h"
+#include "admin_commands/SendGlobalMessage.h"
 #include "admin_commands/StatsCmd.h"
+#include "admin_commands/VersionCmd.h"
+
+class Database;
 
 class VoiceAngerBot : public QObject
 {
@@ -42,10 +47,9 @@ public:
     ~VoiceAngerBot();
 
     bool started();
-    void setApiKey(const QString& key)
-        { m_botApiKey = key; }
-    void setBotAdmin(qint32 userId)
-        { m_botAdmin = userId; }
+    void setApiKey(const QString& key)                     { m_botApiKey = key; }
+    void setDatabase(Database* newDb);
+    void setBotAdmin(qint32 userId)                        { m_botAdmin = userId; }
     void setProxy(const QNetworkProxy& proxy);
 
 public slots:
@@ -56,8 +60,12 @@ public slots:
     void handleVoiceMessage(const Telegram::Message& message);
     void handleVideoMessage(const Telegram::Message& message);
 
+    void handleNewChat(const Telegram::Message& message);
+    void handleChatRemoval(const Telegram::Message& message);
+
 private:
     Telegram::Bot*   p_botApi;
+    Database*        p_db;
     Telegram::User   m_botUser;
     QString          m_botApiKey;
 
@@ -68,7 +76,10 @@ private:
     AddGlobalReaction         m_addGlobalCmd;
     AddVideoReaction          m_addVideoReactionCmd;
     AddVoiceReaction          m_addVoiceReactionCmd;
+    BackupDbCommand           m_backupDbCmd;
+    SendGlobalMessage         m_sendGlobalMessageCmd;
     StatsCmd                  m_statistic;
+    VersionCmd                m_versionCmd;
 };
 
 #endif // VOICEANGERBOT_H

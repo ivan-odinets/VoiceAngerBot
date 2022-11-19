@@ -1,4 +1,4 @@
-debian/voice-anger-bot.conf             etc/telegram-bots
+debian/voice-anger-bot.conf             etc/bots/telegram
 bin/voice-anger-bot                     usr/bin
 debian/voice-anger-bot.service          lib/systemd/system
-reactions/ua.txt                        var/lib/telegram-bots/voice-anger-bot/reactions
+reactions/ua.txt                        var/lib/bots/telegram/voice-anger-bot/reactions

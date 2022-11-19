@@ -4,10 +4,11 @@ After=network.target
 
 [Service]
 User=voice-anger-bot
-EnvironmentFile=/etc/telegram-bots/voice-anger-bot.conf
-ExecStart=/usr/bin/voice-anger-bot -t $TOKEN -r $REACTIONS -a $ADMIN
-StandardOutput=file:/var/log/telegram-bots/voice-anger-bot/output.log
-StandardError=file:/var/log/telegram-bots/voice-anger-bot/error.log
+#EnvironmentFile=/etc/telegram-bots/voice-anger-bot.conf
+#ExecStart=/usr/bin/voice-anger-bot -t $TOKEN -r $REACTIONS -a $ADMIN -d $DATABASE -p $PROXY
+ExecStart=/usr/bin/voice-anger-bot -c /etc/bots/telegram/voice-anger-bot.conf
+StandardOutput=file:/var/log/bots/telegram/voice-anger-bot/output.log
+StandardError=file:/var/log/bots/telegram/voice-anger-bot/error.log
 
 ProtectSystem=yes
 NoNewPrivileges=yes

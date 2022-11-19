@@ -1,5 +1,5 @@
-etc/telegram-bots
+etc/bots/telegram
 usr/bin
-var/lib/telegram-bots/voice-anger-bot
-var/lib/telegram-bots/voice-anger-bot/reactions
-var/log/telegram-bots/voice-anger-bot/
+var/lib/bots/telegram/voice-anger-bot
+var/lib/bots/telegram/voice-anger-bot/reactions
+var/log/bots/telegram/voice-anger-bot

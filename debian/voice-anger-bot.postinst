@@ -23,12 +23,12 @@ case "$1" in
     # add the voice-anger-bot user
     if ! getent passwd voice-anger-bot > /dev/null; then
         adduser --quiet --system --no-create-home \
-            --home /var/lib/telegram-bots/voice-anger-bot --ingroup nogroup voice-anger-bot
+            --home /var/lib/bots/telegram/voice-anger-bot --ingroup nogroup voice-anger-bot
     fi
 
     # set ownership and permissions on directories
-    for i in /var/lib/telegram-bots/voice-anger-bot /var/log/telegram-bots/voice-anger-bot \
-             /var/lib/telegram-bots/voice-anger-bot/reactions /var/lib/telegram-bots/voice-anger-bot/reactions/ua.txt; do
+    for i in /var/lib/bots/telegram/voice-anger-bot /var/log/bots/telegram/voice-anger-bot \
+             /var/lib/bots/telegram/voice-anger-bot/reactions /var/lib/bots/telegram/voice-anger-bot/reactions/ua.txt; do
         if ! dpkg-statoverride --list --quiet "$i" >/dev/null; then
             dpkg-statoverride --force-all --quiet --update \
                 --add voice-anger-bot nogroup 0755 "$i"
@@ -36,9 +36,9 @@ case "$1" in
     done
 
     # set ownership and permissions on conf file
-    if ! dpkg-statoverride --list --quiet /etc/telegram-bots/voice-anger-bot.conf > /dev/null; then
+    if ! dpkg-statoverride --list --quiet /etc/bots/telegram/voice-anger-bot.conf > /dev/null; then
         dpkg-statoverride --force-all --quiet --update \
-            --add voice-anger-bot nogroup 0640 /etc/telegram-bots/voice-anger-bot.conf
+            --add voice-anger-bot nogroup 0640 /etc/bots/telegram/voice-anger-bot.conf
     fi
     ;;
 

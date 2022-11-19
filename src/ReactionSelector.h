@@ -50,7 +50,7 @@ private:
     Q_DISABLE_COPY_MOVE(ReactionSelector);
 
     QString _getRandomString(const QStringList &list);
-    void _appentLineToFile(const QString& line);
+    void _appendLineToFile(const QString& line);
 
     QStringList m_voiceReactions;
     QStringList m_videoReactions;

@@ -32,10 +32,8 @@
 class AddVoiceReaction : public BotAdminCommand
 {
 public:
-    QString cmdToken() const                               { return "/addVoiceReaction"; }
-
-protected:
-    void executeCommand(const Telegram::Message& message);
+    QString cmdToken() const override                      { return QStringLiteral("/addVoiceReaction"); }
+    void executeCommand(const Telegram::Message& message) override;
 };
 
 #endif // ADDVOICEREACTION_H

@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * MIT License
- * Copyright (c) 2021 Ivan Odinets
+ * Copyright (c) 2022 Ivan Odinets
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,35 +24,21 @@
  *
  */
 
-#ifndef BOTADMINCOMMAND_H
-#define BOTADMINCOMMAND_H
+#include "BackupDbCommand.h"
 
-#include "QtTelegramBot/types/message.h"
+#include <QFile>
 
-namespace Telegram
+#include "QtTelegramBot/qttelegrambot.h"
+
+#include "Database.h"
+
+void BackupDbCommand::executeCommand(const Telegram::Message& message)
 {
-class Bot;
+    QFile dbFile(getDatabase()->getFileName());
+    if (!dbFile.exists()) {
+        qWarning() << "Database file is not existing? "<<getDatabase()->getFileName();
+        return;
+    }
+
+    getApi()->sendDocument(message.from.id,&dbFile,message.id);
 }
-
-class Database;
-
-class BotAdminCommand
-{
-public:
-    static void setTelegramApi(Telegram::Bot* newApi)      { p_api = newApi; }
-    static void setDatabase(Database* db)                  { p_db = db; }
-
-    virtual QString cmdToken() const = 0;
-    virtual void executeCommand(const Telegram::Message& message) = 0;
-
-protected:
-    static Telegram::Bot* getApi()                         { return p_api; }
-    static Database* getDatabase()                         { return p_db; }
-    static void _sendReply(const QString& reply,const Telegram::Message& message);
-
-private:
-    static Telegram::Bot* p_api;
-    static Database*      p_db;
-};
-
-#endif // BOTADMINCOMMAND_H

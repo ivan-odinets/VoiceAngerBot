@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * MIT License
- * Copyright (c) 2021 Ivan Odinets
+ * Copyright (c) 2022 Ivan Odinets
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,35 +24,9 @@
  *
  */
 
-#ifndef BOTADMINCOMMAND_H
-#define BOTADMINCOMMAND_H
+#include "VersionCmd.h"
 
-#include "QtTelegramBot/types/message.h"
-
-namespace Telegram
+void VersionCmd::executeCommand(const Telegram::Message& message)
 {
-class Bot;
+    _sendReply(QString("Version: %1").arg(APP_VERSION),message);
 }
-
-class Database;
-
-class BotAdminCommand
-{
-public:
-    static void setTelegramApi(Telegram::Bot* newApi)      { p_api = newApi; }
-    static void setDatabase(Database* db)                  { p_db = db; }
-
-    virtual QString cmdToken() const = 0;
-    virtual void executeCommand(const Telegram::Message& message) = 0;
-
-protected:
-    static Telegram::Bot* getApi()                         { return p_api; }
-    static Database* getDatabase()                         { return p_db; }
-    static void _sendReply(const QString& reply,const Telegram::Message& message);
-
-private:
-    static Telegram::Bot* p_api;
-    static Database*      p_db;
-};
-
-#endif // BOTADMINCOMMAND_H

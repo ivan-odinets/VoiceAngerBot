@@ -1,4 +1,4 @@
-var/log/telegram-bots/voice-anger-bot/*.log {
+/var/log/bots/telegram/voice-anger-bot/*.log {
     weekly
     missingok
     rotate 7

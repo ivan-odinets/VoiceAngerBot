@@ -2,7 +2,7 @@
  **********************************************************************************************************************
  *
  * MIT License
- * Copyright (c) 2021 Ivan Odinets
+ * Copyright (c) 2022 Ivan Odinets
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,35 +24,27 @@
  *
  */
 
-#ifndef BOTADMINCOMMAND_H
-#define BOTADMINCOMMAND_H
+#ifndef DATABASE_H
+#define DATABASE_H
 
-#include "QtTelegramBot/types/message.h"
+#include <QtSql/QSqlDatabase>
 
-namespace Telegram
-{
-class Bot;
-}
-
-class Database;
-
-class BotAdminCommand
+class Database
 {
 public:
-    static void setTelegramApi(Telegram::Bot* newApi)      { p_api = newApi; }
-    static void setDatabase(Database* db)                  { p_db = db; }
+    Database();
 
-    virtual QString cmdToken() const = 0;
-    virtual void executeCommand(const Telegram::Message& message) = 0;
+    bool databaseInitialized();
+    void setFileName(const QString& fileName)      { db.setDatabaseName(fileName); }
+    QString getFileName() const                    { return db.databaseName(); }
 
-protected:
-    static Telegram::Bot* getApi()                         { return p_api; }
-    static Database* getDatabase()                         { return p_db; }
-    static void _sendReply(const QString& reply,const Telegram::Message& message);
+    void addChat(qint64 chatId);
+    bool chatRegistered(qint64 chatId);
+    void removeChat(qint64 chatId);
+    QList<qint64> getAllChats() const;
 
 private:
-    static Telegram::Bot* p_api;
-    static Database*      p_db;
+    QSqlDatabase db;
 };
 
-#endif // BOTADMINCOMMAND_H
+#endif // DATABASE_H

@@ -28,30 +28,39 @@
 #define COMMANDLINEPARSER_H
 
 #include <QCommandLineParser>
-#include <QNetworkProxy>
+
+#include "QtTelegramBot/types/user.h"
+
+#include "ProxyHelper.h"
 
 class CommandLineParser : public QCommandLineParser
 {
+    Q_DECLARE_TR_FUNCTIONS(CommandLineParser);
 public:
     CommandLineParser();
     ~CommandLineParser() {}
 
-    bool validProxyConfigured() const          { return isValidProxy(value(m_networkProxy)); }
-    QNetworkProxy proxy() const                { return proxyFromString(value(m_networkProxy)); }
+    QString configFile() const                 { return value(m_configFileOption); }
+
+    bool validProxyConfigured() const          { return ProxyHelper::isValidProxy(proxyString()); }
+    QNetworkProxy proxy() const                { return ProxyHelper::proxyFromString(proxyString()); }
+    QString proxyString() const                { return value(m_networkProxy); }
 
     QString token() const                      { return value(m_botTokenOption); }
     QString reactionsFile() const              { return value(m_reactionMessagesFileOption); }
 
-    qint64 botAdmin()                          { return value(m_botAdminOption).toLong(); }
+    Telegram::User::Id botAdmin()              { return value(m_botAdminOption).toLongLong(); }
+
+    QString dbFile() const                     { return value(m_dbFileOption); }
 
 private:
+    QCommandLineOption   m_configFileOption;
     QCommandLineOption   m_botTokenOption;
     QCommandLineOption   m_reactionMessagesFileOption;
     QCommandLineOption   m_botAdminOption;
+    QCommandLineOption   m_dbFileOption;
     QCommandLineOption   m_networkProxy;
 
-    static bool isValidProxy(const QString& input);
-    static QNetworkProxy proxyFromString(QString input);
 };
 
 #endif // COMMANDLINEPARSER_H

@@ -26,15 +26,19 @@
 
 #include "VoiceAngerBot.h"
 
+#include "Database.h"
 #include "ReactionSelector.h"
 
 VoiceAngerBot::VoiceAngerBot(QObject* parent)
-    : QObject(parent),p_botApi(nullptr)
+    : QObject(parent),p_botApi(nullptr),p_db(nullptr)
 {
     m_adminCommands.append(&m_addGlobalCmd);
     m_adminCommands.append(&m_addVideoReactionCmd);
     m_adminCommands.append(&m_addVoiceReactionCmd);
+    m_adminCommands.append(&m_backupDbCmd);
     m_adminCommands.append(&m_statistic);
+    m_adminCommands.append(&m_sendGlobalMessageCmd);
+    m_adminCommands.append(&m_versionCmd);
 }
 VoiceAngerBot::~VoiceAngerBot()
 {}
@@ -58,9 +62,23 @@ void VoiceAngerBot::setProxy(const QNetworkProxy& proxy)
         p_botApi->setProxy(proxy);
 }
 
+void VoiceAngerBot::setDatabase(Database* newDb)
+{
+    p_db = newDb;
+    BotAdminCommand::setDatabase(p_db);
+}
+
 void VoiceAngerBot::messageRecieved(const Telegram::Message& message)
 {
+    qDebug() << "Telegram Message recieved: "<<message;
     m_statistic.increaseMessagesHandled();
+
+    if (message.chat.id != message.from.id) { //Some chat message. Probably new chat?
+        if (!p_db->chatRegistered(message.chat.id))
+            p_db->addChat(message.chat.id);
+    }
+
+    //Handle both chat and private messages
     if (message.type == Telegram::Message::VoiceType) {
         handleVoiceMessage(message);
         return;
@@ -71,12 +89,50 @@ void VoiceAngerBot::messageRecieved(const Telegram::Message& message)
         return;
     }
 
+    //Handle chat messages
+    if ((message.type == Telegram::Message::NewChatParticipantType) &&
+        (message.user.id == m_botUser.id)) {
+        handleNewChat(message);
+        return;
+    }
+
+    if ((message.type == Telegram::Message::LeftChatParticipantType) &&
+        (message.user.id == m_botUser.id)) {
+        handleChatRemoval(message);
+        return;
+    }
+
+    //Handle private messages only from bot admin
     if ((message.from.id == message.chat.id) &&
         (message.from.id == m_botAdmin)) {
         parseAdminCommand(message);
         return;
     }
 }
+
+/*
+ *********************************************************************************************************************
+ *
+ * Handling chats
+ *
+ */
+
+void VoiceAngerBot::handleNewChat(const Telegram::Message& message)
+{
+    p_db->addChat(message.chat.id);
+}
+
+void VoiceAngerBot::handleChatRemoval(const Telegram::Message& message)
+{
+    p_db->removeChat(message.chat.id);
+}
+
+/*
+ *********************************************************************************************************************
+ *
+ * Actual reacting on voice/video messages
+ *
+ */
 
 void VoiceAngerBot::handleVideoMessage(const Telegram::Message& message)
 {
@@ -104,4 +160,6 @@ void VoiceAngerBot::parseAdminCommand(const Telegram::Message& message)
             return;
         }
     }
+
+    _sendReply(tr("Unknown command %1").arg(message.string),message);
 }

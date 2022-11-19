@@ -32,10 +32,8 @@
 class AddVideoReaction : public BotAdminCommand
 {
 public:
-    QString cmdToken() const                               { return "/addVideoReaction"; }
-
-protected:
-    void executeCommand(const Telegram::Message &message);
+    QString cmdToken() const override                      { return QStringLiteral("/addVideoReaction"); }
+    void executeCommand(const Telegram::Message &message) override;
 };
 
 #endif // ADDVIDEOREACTION_H

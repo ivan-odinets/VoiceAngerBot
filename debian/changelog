@@ -1,3 +1,14 @@
+voice-anger-bot (1.2.0-1) unstable; urgency=low
+
+  * Added support of config files
+  * Added /backupDB, /sendGlobalMessage and /version commands
+  * Small changes in code structure
+  * Changed default config file location to /etc/bots/telegram/voice-anger-bot.conf
+  * Changed default reactions directory to var/lib/bots/telegram/voice-anger-bot
+  * Changed logs locations to /var/log/bots/telegram/voice-anger-bot
+
+ -- Ivan Odinets <i_odinets@protonmail.com>  Sat, 18 Nov 2022 04:20:00 +0200
+
 voice-anger-bot (1.0.1-1) unstable; urgency=low
 
   * Initial release.

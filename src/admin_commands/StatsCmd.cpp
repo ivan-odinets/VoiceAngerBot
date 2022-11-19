@@ -26,6 +26,8 @@
 
 #include "StatsCmd.h"
 
+#include "Database.h"
+
 StatsCmd::StatsCmd() :
     m_startingDateTime(QDateTime::currentDateTimeUtc()),
     m_messagesHandled(0),
@@ -37,11 +39,13 @@ void StatsCmd::executeCommand(const Telegram::Message& message)
 {
     QString result = QString(
                 "Bot running since: %1\r\n"
-                "Total messages processed: %2\r\n"
+                "Messages processed: %2\r\n"
                 "Voice messages processed: %3\r\n"
-                "Video messages processed: %4")
+                "Video messages processed: %4\r\n"
+                "Total chats count: %5")
             .arg(m_startingDateTime.toString())
-            .arg(m_messagesHandled).arg(m_voiceMessagesHandled).arg(m_videoMessagesHandled);
+            .arg(m_messagesHandled).arg(m_voiceMessagesHandled).arg(m_videoMessagesHandled)
+            .arg(getDatabase()->getAllChats().count());
 
     BotAdminCommand::_sendReply(result,message);
 }

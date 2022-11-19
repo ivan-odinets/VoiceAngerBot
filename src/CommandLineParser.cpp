@@ -29,15 +29,22 @@
 #include <QDir>
 
 CommandLineParser::CommandLineParser() :
-    m_botTokenOption(QStringList() << "t" << "token",QCoreApplication::translate("main", "Set bot token.")),
-    m_reactionMessagesFileOption(QStringList() << "r" << "reactions",QCoreApplication::translate("main", "Set reaction file.")),
-    m_botAdminOption(QStringList() << "a" << "admin",QCoreApplication::translate("main", "Set bot administrator userId.")),
-    m_networkProxy(QStringList() << "p" << "proxy",tr("Specify <proxy> to use in following format http|socks5://<server>:<port>"),tr("proxy"))
+    m_configFileOption(QStringList()           << "c" << "config",    tr("Specify <config> file to use")),
+    m_botTokenOption(QStringList()             << "t" << "token",     tr("Set bot token.")),
+    m_reactionMessagesFileOption(QStringList() << "r" << "reactions", tr("Set reaction file.")),
+    m_botAdminOption(QStringList()             << "a" << "admin",     tr("Set bot administrator userId.")),
+    m_dbFileOption(QStringList()               << "d" << "database",  tr("main","Set database file.")),
+    m_networkProxy(QStringList()               << "p" << "proxy",     tr("Specify <proxy> to use in following format http|socks5://<server>:<port>"),tr("proxy"))
 {
     // -h/ --help
     addHelpOption();
     // -v/ --version
     addVersionOption();
+
+    // -c/ --config
+    m_configFileOption.setValueName("config");
+    m_configFileOption.setDefaultValue(QString());
+    addOption(m_configFileOption);
 
     // -t/ --token
     m_botTokenOption.setValueName("token");
@@ -51,74 +58,16 @@ CommandLineParser::CommandLineParser() :
 
     // -a/ --admin
     m_botAdminOption.setValueName("admin");
-    m_botAdminOption.setDefaultValue("-1");
+    m_botAdminOption.setDefaultValue("0");
     addOption(m_botAdminOption);
+
+    // -d/ --database
+    m_dbFileOption.setValueName("database");
+    m_dbFileOption.setDefaultValue("");
+    addOption(m_dbFileOption);
 
     // -p/ --proxy
     m_networkProxy.setValueName("proxy");
     m_networkProxy.setDefaultValue(QString());
     addOption(m_networkProxy);
-}
-
-bool CommandLineParser::isValidProxy(const QString& input)
-{
-    static QRegExp proxyPattern("^(http|socks5)://.*:([0-6]\\d\\d\\d\\d|\\d\\d\\d\\d)$");
-    return proxyPattern.exactMatch(input);
-}
-
-QNetworkProxy CommandLineParser::proxyFromString(QString inputString)
-{
-    QNetworkProxy result;
-
-    if (inputString.isEmpty()) {
-        result.setType(QNetworkProxy::NoProxy);
-        return result;
-    }
-
-    //Get proxy type
-    QRegExp protocolRegExp("^.*(?=://)");
-    if (protocolRegExp.indexIn(inputString) < 0) { //No protocol specified
-        qWarning() << tr("Error parsing proxy protocol!");
-        return QNetworkProxy();
-    }
-    QString protocol = protocolRegExp.cap(0);
-    if (protocol == QStringLiteral("http")) {
-        result.setType(QNetworkProxy::HttpProxy);
-        inputString.remove(QRegExp("^http://"));
-    } else if (protocol == QStringLiteral("socks5")) {
-        result.setType(QNetworkProxy::Socks5Proxy);
-        inputString.remove(QRegExp("^socks5://"));
-    } else {
-        qWarning() << tr("Unknown proxy protocol %1. Disabling proxy.").arg(protocol);
-        return QNetworkProxy();
-    }
-
-    //Get proxy server
-    QRegExp hostNameRegExp("^.*(?=:)");
-    if (hostNameRegExp.indexIn(inputString) < 0) {
-        //Probably some syntax error, return sth
-        qWarning() << "Error parsing proxy host. Disabling proxy...";
-        return QNetworkProxy();
-    }
-
-    result.setHostName(hostNameRegExp.cap(0));
-    inputString.remove(hostNameRegExp);
-    if (!inputString.startsWith(":")) {
-        //Probably no port specified, return sth
-        qWarning() << "Error parsing proxy port. Disabling proxy...";
-        return QNetworkProxy();
-    }
-
-    inputString.remove(QRegExp("^:"));
-    bool ok = false;
-    qint32 proxyPort = inputString.toInt(&ok);
-    if (!ok) {
-        //Error in port input
-        qWarning() << "Another error parsing proxy port. Disabling proxy...";
-        return QNetworkProxy();
-    }
-
-    result.setPort(proxyPort);
-
-    return result;
 }

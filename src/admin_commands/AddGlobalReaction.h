@@ -32,10 +32,8 @@
 class AddGlobalReaction : public BotAdminCommand
 {
 public:
-    QString cmdToken() const                               { return "/addGlobalReaction"; }
-
-protected:
-    void executeCommand(const Telegram::Message &message);
+    QString cmdToken() const override                      { return QStringLiteral("/addGlobalReaction"); }
+    void executeCommand(const Telegram::Message &message) override;
 };
 
 #endif // ADDGLOBALREACTION_H

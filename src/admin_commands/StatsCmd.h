@@ -33,14 +33,12 @@ class StatsCmd : public BotAdminCommand
 {
 public:
     StatsCmd();
-    QString cmdToken() const                               { return "/stats"; }
+    QString cmdToken() const override                      { return QStringLiteral("/stats"); }
+    void executeCommand(const Telegram::Message& message) override;
 
     void increaseMessagesHandled()                         { m_messagesHandled++; }
     void increaseVoiceMessagesHandled()                    { m_voiceMessagesHandled++; }
     void increaseVideoMessagesHandled()                    { m_videoMessagesHandled++; }
-
-protected:
-    void executeCommand(const Telegram::Message& message);
 
 private:
     QDateTime        m_startingDateTime;

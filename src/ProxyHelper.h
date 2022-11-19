@@ -24,35 +24,19 @@
  *
  */
 
-#ifndef BOTADMINCOMMAND_H
-#define BOTADMINCOMMAND_H
+#ifndef PROXYHELPER_H
+#define PROXYHELPER_H
 
-#include "QtTelegramBot/types/message.h"
+#include <QCoreApplication>
+#include <QNetworkProxy>
 
-namespace Telegram
+class ProxyHelper
 {
-class Bot;
-}
-
-class Database;
-
-class BotAdminCommand
-{
+    Q_DECLARE_TR_FUNCTIONS(CommandLineParser);
 public:
-    static void setTelegramApi(Telegram::Bot* newApi)      { p_api = newApi; }
-    static void setDatabase(Database* db)                  { p_db = db; }
-
-    virtual QString cmdToken() const = 0;
-    virtual void executeCommand(const Telegram::Message& message) = 0;
-
-protected:
-    static Telegram::Bot* getApi()                         { return p_api; }
-    static Database* getDatabase()                         { return p_db; }
-    static void _sendReply(const QString& reply,const Telegram::Message& message);
-
-private:
-    static Telegram::Bot* p_api;
-    static Database*      p_db;
+    static bool              isValidProxy(const QString& input);
+    static QNetworkProxy     proxyFromString(QString input);
+    static QString           stringFromProxy(const QNetworkProxy& proxy);
 };
 
-#endif // BOTADMINCOMMAND_H
+#endif // PROXYHELPER_H

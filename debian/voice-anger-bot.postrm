@@ -30,7 +30,7 @@ case "$1" in
 
         deluser --quiet --system voice-anger-bot > /dev/null || true
 
-    rm -rf /var/lib/telegram-bots/voice-anger-bot /var/log/telegram-bots/voice-anger-bot > /dev/null 2>&1
+    rm -rf /var/lib/bots/telegram/voice-anger-bot /var/log/bots/telegram/voice-anger-bot > /dev/null 2>&1
     ;;
 
     *)

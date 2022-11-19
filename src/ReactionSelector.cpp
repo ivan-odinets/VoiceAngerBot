@@ -38,14 +38,14 @@ bool ReactionSelector::phrasesLoaded(const QString &fileName)
 {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly)) {
-        qCritical() << __FILE__ << ":" << __LINE__ << ". Error loading phrases file "<<fileName<<". Error: "<<file.errorString();
+        qCritical() << "Error loading phrases file "<<fileName<<". Error: "<<file.errorString();
         return false;
     }
 
     m_fileName = fileName;
 
     if (file.size() == 0) {
-        qCritical() << __FILE__ << ":" << __LINE__ << ". Phrases file "<<fileName<<" is empty.";
+        qCritical() << "Phrases file "<<fileName<<" is empty.";
         file.close();
         return false;
     }
@@ -83,7 +83,7 @@ void ReactionSelector::addGlobalReaction(QString text)
     m_videoReactions.append(text);
 
     text = ALL_PREFIX + text;
-    _appentLineToFile(text);
+    _appendLineToFile(text);
 }
 
 void ReactionSelector::addVoiceReaction(QString text)
@@ -91,7 +91,7 @@ void ReactionSelector::addVoiceReaction(QString text)
     m_voiceReactions.append(text);
 
     text = VOICE_PREFIX + text;
-    _appentLineToFile(text);
+    _appendLineToFile(text);
 }
 
 void ReactionSelector::addVideoReaction(QString text)
@@ -99,15 +99,15 @@ void ReactionSelector::addVideoReaction(QString text)
     m_videoReactions.append(text);
 
     text = VIDEO_PREFIX + text;
-    _appentLineToFile(text);
+    _appendLineToFile(text);
 }
 
-void ReactionSelector::_appentLineToFile(const QString& line)
+void ReactionSelector::_appendLineToFile(const QString& line)
 {
     QFile file(m_fileName);
 
     if (!file.open(QIODevice::WriteOnly|QIODevice::Append)) {
-        qWarning() << __FILE__ <<":"<<__LINE__<<". Error opening "<<m_fileName<<" for writing. Error: "<<file.errorString();
+        qWarning() << "Error opening "<<m_fileName<<" for writing. Error: "<<file.errorString();
         return;
     }
 
