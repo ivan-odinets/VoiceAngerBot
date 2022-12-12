@@ -29,7 +29,7 @@
 
 #include <QCommandLineParser>
 
-#include "QtTelegramBot/types/user.h"
+#include "QtTelegramBot/src/types/user.h"
 
 #include "ProxyHelper.h"
 

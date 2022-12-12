@@ -30,7 +30,7 @@
 
 void AddVoiceReaction::executeCommand(const Telegram::Message &message)
 {
-    QString line = message.string;
+    QString line = message.text();
     line.remove(this->cmdToken());
     if (line.startsWith(" "))
         line.remove(0,1);

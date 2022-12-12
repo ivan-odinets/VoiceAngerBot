@@ -30,7 +30,7 @@
 #include <QSettings>
 #include <QNetworkProxy>
 
-#include "QtTelegramBot/types/user.h"
+#include "QtTelegramBot/src/types/user.h"
 
 class Settings
 {

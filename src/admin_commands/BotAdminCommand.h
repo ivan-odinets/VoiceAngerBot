@@ -27,7 +27,7 @@
 #ifndef BOTADMINCOMMAND_H
 #define BOTADMINCOMMAND_H
 
-#include "QtTelegramBot/types/message.h"
+#include "QtTelegramBot/src/types/message.h"
 
 namespace Telegram
 {

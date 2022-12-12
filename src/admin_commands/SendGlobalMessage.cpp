@@ -26,13 +26,13 @@
 
 #include "SendGlobalMessage.h"
 
-#include "QtTelegramBot/qttelegrambot.h"
+#include "QtTelegramBot.h"
 
 #include "Database.h"
 
 void SendGlobalMessage::executeCommand(const Telegram::Message& message)
 {
-    QString messageText = message.string;
+    QString messageText = message.text();
     messageText.remove(cmdToken());
 
     auto chatList = getDatabase()->getAllChats();

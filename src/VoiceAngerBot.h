@@ -27,7 +27,7 @@
 #ifndef VOICEANGERBOT_H
 #define VOICEANGERBOT_H
 
-#include "qttelegrambot.h"
+#include "QtTelegramBot.h"
 
 #include "admin_commands/AddGlobalReaction.h"
 #include "admin_commands/AddVideoReaction.h"

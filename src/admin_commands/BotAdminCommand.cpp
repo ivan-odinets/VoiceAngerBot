@@ -26,12 +26,12 @@
 
 #include "BotAdminCommand.h"
 
-#include "QtTelegramBot/qttelegrambot.h"
+#include "QtTelegramBot.h"
 
 Telegram::Bot* BotAdminCommand::p_api = nullptr;
 Database* BotAdminCommand::p_db = nullptr;
 
 void BotAdminCommand::_sendReply(const QString& reply,const Telegram::Message& message)
 {
-    p_api->sendMessage(message.chat.id,reply,message.id);
+    p_api->sendMessage(message.chat().id(),reply,message.id());
 }

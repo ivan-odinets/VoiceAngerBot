@@ -45,7 +45,7 @@ VoiceAngerBot::~VoiceAngerBot()
 
 bool VoiceAngerBot::started()
 {
-    p_botApi = new Telegram::Bot(m_botApiKey,true,1000);
+    p_botApi = new Telegram::Bot(m_botApiKey,1000);
     connect(p_botApi,&Telegram::Bot::message,this,&VoiceAngerBot::messageRecieved);
 
     m_botUser = p_botApi->getMe();
@@ -73,38 +73,42 @@ void VoiceAngerBot::messageRecieved(const Telegram::Message& message)
     qDebug() << "Telegram Message recieved: "<<message;
     m_statistic.increaseMessagesHandled();
 
-    if (message.chat.id != message.from.id) { //Some chat message. Probably new chat?
-        if (!p_db->chatRegistered(message.chat.id))
-            p_db->addChat(message.chat.id);
+    if (message.chat().id() != message.from().id()) { //Some chat message. Probably new chat?
+        if (!p_db->chatRegistered(message.chat().id()))
+            p_db->addChat(message.chat().id());
     }
 
     //Handle both chat and private messages
-    if (message.type == Telegram::Message::VoiceType) {
+    if (message.type() == Telegram::Message::VoiceType) {
         handleVoiceMessage(message);
         return;
     }
 
-    if (message.type == Telegram::Message::VideoNoteType) {
+    if (message.type() == Telegram::Message::VideoNoteType) {
         handleVideoMessage(message);
         return;
     }
 
     //Handle chat messages
-    if ((message.type == Telegram::Message::NewChatParticipantType) &&
-        (message.user.id == m_botUser.id)) {
-        handleNewChat(message);
+    if (message.type() == Telegram::Message::NewChatParticipantType) {
+        foreach (Telegram::User user, message.newChatMembers()) {
+            if (user.id() == m_botUser.id()) {
+                handleNewChat(message);
+                return;
+            }
+        }
         return;
     }
 
-    if ((message.type == Telegram::Message::LeftChatParticipantType) &&
-        (message.user.id == m_botUser.id)) {
+    if ((message.type() == Telegram::Message::LeftChatParticipantType) &&
+        (message.leftChatMember().id() == m_botUser.id())) {
         handleChatRemoval(message);
         return;
     }
 
     //Handle private messages only from bot admin
-    if ((message.from.id == message.chat.id) &&
-        (message.from.id == m_botAdmin)) {
+    if ((message.from().id() == message.chat().id()) &&
+        (message.from().id() == m_botAdmin)) {
         parseAdminCommand(message);
         return;
     }
@@ -119,12 +123,12 @@ void VoiceAngerBot::messageRecieved(const Telegram::Message& message)
 
 void VoiceAngerBot::handleNewChat(const Telegram::Message& message)
 {
-    p_db->addChat(message.chat.id);
+    p_db->addChat(message.chat().id());
 }
 
 void VoiceAngerBot::handleChatRemoval(const Telegram::Message& message)
 {
-    p_db->removeChat(message.chat.id);
+    p_db->removeChat(message.chat().id());
 }
 
 /*
@@ -148,18 +152,18 @@ void VoiceAngerBot::handleVoiceMessage(const Telegram::Message& message)
 
 void VoiceAngerBot::_sendReply(const QString &text, const Telegram::Message &message)
 {
-    p_botApi->sendChatAction(message.chat.id,Telegram::Bot::Typing);
-    p_botApi->sendMessage(message.chat.id,text,message.id);
+    p_botApi->sendChatAction(message.chat().id(),Telegram::Bot::Typing);
+    p_botApi->sendMessage(message.chat().id(),text,message.id());
 }
 
 void VoiceAngerBot::parseAdminCommand(const Telegram::Message& message)
 {
     foreach (BotAdminCommand* cmd,m_adminCommands) {
-        if (message.string.startsWith(cmd->cmdToken())) {
+        if (message.text().startsWith(cmd->cmdToken())) {
             cmd->executeCommand(message);
             return;
         }
     }
 
-    _sendReply(tr("Unknown command %1").arg(message.string),message);
+    _sendReply(tr("Unknown command %1").arg(message.text()),message);
 }

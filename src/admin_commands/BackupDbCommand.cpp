@@ -28,7 +28,7 @@
 
 #include <QFile>
 
-#include "QtTelegramBot/qttelegrambot.h"
+#include "QtTelegramBot.h"
 
 #include "Database.h"
 
@@ -40,5 +40,5 @@ void BackupDbCommand::executeCommand(const Telegram::Message& message)
         return;
     }
 
-    getApi()->sendDocument(message.from.id,&dbFile,message.id);
+    getApi()->sendDocument(message.from().id(),&dbFile,message.id());
 }
